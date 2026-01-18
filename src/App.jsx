@@ -6,7 +6,7 @@ export default function App() {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const res = await fetch("http://localhost:5000/gesture");
+      const res = await fetch("https://backend-2-p080.onrender.com/gesture");
       const data = await res.json();
       setGesture(data.gesture);
     }, 500);
@@ -20,7 +20,7 @@ export default function App() {
 
       <div className="camera-box">
         <img
-          src="http://localhost:5000/video"
+          src="http://https://backend-2-p080.onrender.com/video"
           alt="Gesture Stream"
         />
       </div>
