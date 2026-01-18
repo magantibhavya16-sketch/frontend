@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Hands } from "@mediapipe/hands";
-import { Camera } from "@mediapipe/camera_utils";
 import "./App.css";
 
 const BACKEND_URL = "https://backend-2-p080.onrender.com";
@@ -10,7 +8,7 @@ export default function App() {
   const [gesture, setGesture] = useState("No Hand");
 
   useEffect(() => {
-    const hands = new Hands({
+    const hands = new window.Hands({
       locateFile: (file) =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
     });
@@ -40,17 +38,20 @@ export default function App() {
         data.push(0, 0, 0);
       }
 
-      const res = await fetch(`${BACKEND_URL}/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ landmarks: data }),
-      });
-
-      const json = await res.json();
-      setGesture(json.gesture);
+      try {
+        const res = await fetch(`${BACKEND_URL}/predict`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ landmarks: data }),
+        });
+        const json = await res.json();
+        setGesture(json.gesture);
+      } catch {
+        setGesture("Server Error");
+      }
     });
 
-    const camera = new Camera(videoRef.current, {
+    const camera = new window.Camera(videoRef.current, {
       onFrame: async () => {
         await hands.send({ image: videoRef.current });
       },
@@ -65,7 +66,13 @@ export default function App() {
     <div className="app">
       <h1 className="title">Hand Gesture Recognition</h1>
 
-      <video ref={videoRef} autoPlay playsInline className="camera" />
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        className="camera"
+      />
 
       <div className="result">
         <span>Detected Gesture</span>
